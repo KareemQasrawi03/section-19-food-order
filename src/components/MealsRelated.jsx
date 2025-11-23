@@ -24,7 +24,6 @@ function Meals() {
     <ul id="meals">
       {mealsData?.length > 0 &&
         mealsData.map((meal) => <MealItem key={meal.id} meal={meal} />)}
-      {mealsData.length == 0 && <p>owuhvci,</p>}
     </ul>
   );
 }
