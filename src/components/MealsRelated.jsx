@@ -18,7 +18,7 @@ function Meals() {
     }
     fetchMeals();
   }, []);
-  console.log("data", mealsData);
+  // console.log("data", mealsData);
 
   return (
     <ul id="meals">
