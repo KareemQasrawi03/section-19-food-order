@@ -6,7 +6,6 @@ import { UserProgressContext } from "../../store/UserProgressContext";
 import { currencyFormatter } from "../../util/formatting";
 import Button from "./Button";
 
-
 function Checkout() {
   const cartCtx = useContext(CartContext);
   const userProgaressCtx = useContext(UserProgressContext);
@@ -15,15 +14,46 @@ function Checkout() {
     0
   );
 
-  function handleClose(){
-    userProgaressCtx.hideCheckout()
+  function handleClose() {
+    userProgaressCtx.hideCheckout();
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    const fd = new FormData(event.target);
+    const customerData = Object.fromEntries(fd.entries());
+    try {
+      const response = await fetch("http://localhost:3000/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          order: {
+            items: cartCtx.items,
+            customer: customerData,
+          },
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message);
+      }
+
+      console.log("Order success:", data);
+    } catch (err) {
+      console.error("Order error:", err.message);
+    }
   }
   return (
     <Modal open={userProgaressCtx.progress === "checkout"}>
-      <form>
+      <form onSubmit={handleSubmit}>
         <h2>Checkout</h2>
         <p>Total Amount : {currencyFormatter.format(cartTotal)}</p>
-        <Input lable="Full Name" type="text" id="full-name" />
+        <Input lable="Full Name" type="text" id="name" />
         <Input lable="E-Mail Address" type="email" id="email" />
         <Input lable="Street" type="text" id="street" />
         <div className="control-row">
@@ -35,7 +65,7 @@ function Checkout() {
           <Button type="button" textOnly onClick={handleClose}>
             Close
           </Button>
-          <Button >Submit Order</Button>
+          <Button>Submit Order</Button>
         </p>
       </form>
     </Modal>
